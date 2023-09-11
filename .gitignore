@@ -1,0 +1,5 @@
+*
+!.gitignore
+!README.Md
+!LAB1-dectrees/
+!LAB1-dectrees/**
