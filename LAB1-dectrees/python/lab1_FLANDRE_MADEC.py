@@ -2,6 +2,8 @@
 import monkdata as m
 import dtree
 import random
+import numpy as np
+import matplotlib.pyplot as plt
 
 # ---- FUNCTIONS USED IN LAB1 ----
 def partition(data, fraction):
@@ -129,44 +131,101 @@ print("some explanation of pruning from a bias variance trade-off perspective")
 # ---- ASSIGNEMENT 7 -----
 print("\n### Assignement 7")
 
-# monk1train, monk1val = partition(m.monk1, 0.6)
-print(f"{dtree.buildTree(m.monk1test, m.attributes)}")
-print(f"{len(dtree.allPruned(dtree.buildTree(m.monk1test, m.attributes)))}Pruned tree possibles:")
-for pruned in dtree.allPruned(dtree.buildTree(m.monk1test, m.attributes)):
-    print(pruned)
+datasets = [[m.monk1, m.monk1test], [m.monk3, m.monk3test]]
 
+numberTry = 200
+fractions = [0.3, 0.35, 0.4, 0.45, 0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 0.98]
 
-fractions = [0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
-monk1train, monk1val = partition(m.monk1, 0.3)
-bestTree = None
-scoreBestTree = 0
-numberTry = 10
-# for i in range(numberTry):
+fractions_score_test_mean = []
+fractions_score_test_spread = []
+fractions_score_training_mean = []
 
+number_dataset =1
+for dataset in datasets:
+    fractions_score_test_mean_dataset = []
+    fractions_score_test_spread_dataset = []
+    fractions_score_training_dataset = []
+    for fraction in fractions:
+        # waiting message
+        print(f"[MONK-{number_dataset}]Calculation for fraction {round(fraction, 2)} is running...")
+        fraction_score_test = []
+        fraction_score_training = []
+        for i in range(numberTry):
+            monktrain, monkval = partition(dataset[0], fraction)
+            initial_tree = dtree.buildTree(monktrain, m.attributes)
+            all_pruned_tree = dtree.allPruned(initial_tree)
+            best_pruned_tree = all_pruned_tree[0]
+            best_score = dtree.check(best_pruned_tree, monkval)
+            for pruned_tree in all_pruned_tree:
+                score = dtree.check(pruned_tree, monkval)
+                if(score>best_score):
+                    best_score = score
+                    best_pruned_tree = pruned_tree
+            score_test = dtree.check(best_pruned_tree, dataset[1])
+            fraction_score_test.append(score_test)
+            fraction_score_training.append(dtree.check(best_pruned_tree, dataset[0]))
+        fractions_score_test_mean_dataset.append(np.mean(np.array(fraction_score_test)))
+        fractions_score_training_dataset.append(np.mean(np.array(fraction_score_training)))
+        fractions_score_test_spread_dataset.append(np.std(np.array(fraction_score_test), ddof=1))
+    fractions_score_test_mean.append(fractions_score_test_mean_dataset)
+    fractions_score_test_spread.append(fractions_score_test_spread_dataset)
+    fractions_score_training_mean.append(fractions_score_training_dataset)
+    print(f"----Calculation of MONK-{number_dataset} finised----")
+    number_dataset = 3
 
     
-# for pruned_tree in dtree.allPruned(dtree.buildTree(monk1train, m.attributes)):
-#     # print("\n-------------")
-#     # print(f"pruned used: {pruned_tree}")
-#     scoreTree = dtree.check(pruned_tree, monk1val)
-#     # print(f"score: {scoreTree}")
-#     if(scoreTree >= scoreBestTree):
-#         scoreBestTree = scoreTree
-#         bestTree = pruned_tree
-#     # print("-------------")
-# print(f"\n\nBetter pruned tree: {pruned_tree}")
-# print(f"On testing set: {dtree.check(bestTree, m.monk1test)}")
 
+# Display textual result
+for indexDataset in range(len(datasets)):
+    for i in range(len(fractions)):
+        print(f"[MONK-{'1' if indexDataset==0 else '3'}] Fraction {fractions[i]}: mean = {fractions_score_test_mean[indexDataset][i]} | spread = {fractions_score_test_spread[indexDataset][i]}")
 
+# Display results using plots
+plt.subplot(2, 2, 1)
+plt.plot(fractions, fractions_score_test_mean[0], label='mean score')
+plt.title('[MONK-1] Mean score')
+plt.xlabel('fraction')
+plt.ylabel('score')
 
+plt.subplot(2, 2, 2)
+plt.plot(fractions, fractions_score_test_spread[0], label='spread score')
+plt.title('[MONK-1] Spread of score')
+plt.xlabel('fraction')
+plt.ylabel('score')
 
-for fraction in fractions:
-    for i in range(numberTry):
-        monk1train, monk1val = partition(m.monk1, 0.3)
+plt.subplot(2, 2, 3)
+plt.plot(fractions, fractions_score_test_mean[1], label='mean score')
+plt.title('[MONK-3] Mean score')
+plt.xlabel('fraction')
+plt.ylabel('score')
 
+plt.subplot(2, 2, 4)
+plt.plot(fractions, fractions_score_test_spread[1], label='spread score')
+plt.title('[MONK-3] Spread of score')
+plt.xlabel('fraction')
+plt.ylabel('score')
 
+plt.tight_layout()
+plt.show()
 
+# plt.subplot(1, 2, 1)
+# plt.plot(fractions, fractions_score_test_mean[0], label='score test set')
+# plt.plot(fractions, fractions_score_training_mean[0], label='score training set')
+# plt.title('[MONK-1] Score of test and training set')
+# plt.xlabel('fraction')
+# plt.ylabel('score')
+# plt.legend()
 
+# plt.subplot(1, 2, 2)
+# plt.plot(fractions, fractions_score_test_mean[1], label='score test set')
+# plt.plot(fractions, fractions_score_training_mean[1], label='score training set')
+# plt.title('[MONK-3] Score of test and training set')
+# plt.xlabel('fraction')
+# plt.ylabel('score')
+# plt.legend()
+
+# plt.tight_layout()
+# plt.show()
 
 print("\n------END------")
 # --------------------------
