@@ -4,6 +4,7 @@ import dtree
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+import drawtree_qt5 as draw
 
 # ---- FUNCTIONS USED IN LAB1 ----
 def partition(data, fraction):
@@ -103,7 +104,13 @@ tree_monk1_str += ")"
 print(tree_monk1_str)
 
 # Display the ID3 tree (depth = 2)
-print(f"--ID3 monk1 tree: {dtree.buildTree(m.monk1, m.attributes, 2)}\n")
+print(f"--ID3 monk1 tree (depth2): {dtree.buildTree(m.monk1, m.attributes, 2)}\n")
+print(f"--ID3 monk1 tree: {dtree.buildTree(m.monk1, m.attributes)}\n")
+print(f"--ID3 monk3 tree: {dtree.buildTree(m.monk3, m.attributes)}\n")
+
+# If you want to display using drawtree_qt5
+# draw.drawTree(dtree.buildTree(m.monk1, m.attributes))
+# draw.drawTree(dtree.buildTree(m.monk3, m.attributes))
 
 
 # Build all tree using dtree on training set
