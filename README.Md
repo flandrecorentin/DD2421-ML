@@ -30,7 +30,7 @@ Improving decision tree methods with pruning method and a parameter of fractionn
 
 ## Lab2 - Support Vector Machines
 
-Corresponding to the repository *LAB2-?????*
+> Corresponding to the repository *LAB2-svm*
 
 ## Lab3 - Bayes Classifier & Boosting
 
