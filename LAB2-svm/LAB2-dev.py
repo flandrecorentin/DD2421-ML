@@ -69,11 +69,11 @@ def indicator(x,y):
     """
     bias = 0
     # for i in range(len(alpha)):
-    #     if near0(alpha[i])!=0.0:
-    #         bias += alpha[i]*targets[i]*kf.linear_kernel([x,y],inputs[i])-targets[i]
+    #     if putils.near0(alpha[i])!=0.0:
+    #         bias += alpha[i]*targets[i]*kf.polynomial_kernel([x,y],inputs[i])-targets[i]
     firstPart = 0
     for i in range(N):
-        firstPart += putils.near0(alpha[i])*targets[i]*kf.linear_kernel([x,y],inputs[i])
+        firstPart += putils.near0(alpha[i])*targets[i]*kf.polynomial_kernel([x,y],inputs[i])
     return firstPart - bias
 
 
@@ -97,7 +97,7 @@ targets=targets[permute]
 P = numpy.ndarray((N,N))
 for i in range(N):
     for j in range(N):
-        P[i,j]=targets[i]*targets[j]*kf.linear_kernel(inputs[i],inputs[j])
+        P[i,j]=targets[i]*targets[j]*kf.polynomial_kernel(inputs[i],inputs[j])
 
 
 # initialization variables
@@ -112,8 +112,8 @@ XC=constraint={'type':'eq', 'fun':zerofun}
 ret = minimize(objective, start,
                bounds=B)
 alpha = ret['x']
-print(f"alpha:\n{alpha}")
-print(f"{[indicator(input[0], input[1]) for input in inputs]}")
+# print(f"alpha:\n{alpha}") # print alpha values (majority of 0)
+# print(f"{[indicator(input[0], input[1]) for input in inputs]}") # compute indicator for each input (inferor or egal at -1 or superior or egal at 1))
 
 
 # *** Plotting ***
@@ -124,7 +124,7 @@ plt.plot([p[0] for p in classB],
          [p[1] for p in classB],
          'r.')
 plt.axis('equal') # force same scale
-# plt.title("title") # title of the plot
+
 
 
 # *** Plotting the Decision Boundary ***
@@ -138,5 +138,7 @@ plt.contour(xgrid, ygrid, grid,
             colors=('red', 'black', 'blue'),
             linewidths=(1,3,1))
 
-plt.savefig('svmplot.pdf') # save copy in a file
+# plt.title("title") # title of the plot
+plt.savefig('symplot.pdf') # save copy in a file
 plt.show()
+# 0.5, 1, 1.5, 2
