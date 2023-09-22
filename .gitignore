@@ -5,3 +5,6 @@
 !LAB1-dectrees/**
 !LAB2-svm/
 !LAB2-svm/**
+LAB2-svm/svmplot.pdf
+!LAB3-abc/
+!LAB3-abc/**
