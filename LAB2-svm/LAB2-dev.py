@@ -70,10 +70,10 @@ def indicator(x,y):
     bias = 0
     # for i in range(len(alpha)):
     #     if putils.near0(alpha[i])!=0.0:
-    #         bias += alpha[i]*targets[i]*kf.polynomial_kernel([x,y],inputs[i])-targets[i]
+    #         bias += alpha[i]*targets[i]*kf.linear_kernel([x,y],inputs[i])-targets[i]
     firstPart = 0
     for i in range(N):
-        firstPart += putils.near0(alpha[i])*targets[i]*kf.polynomial_kernel([x,y],inputs[i])
+        firstPart += putils.near0(alpha[i])*targets[i]*kf.linear_kernel([x,y],inputs[i])
     return firstPart - bias
 
 
@@ -97,12 +97,13 @@ targets=targets[permute]
 P = numpy.ndarray((N,N))
 for i in range(N):
     for j in range(N):
-        P[i,j]=targets[i]*targets[j]*kf.polynomial_kernel(inputs[i],inputs[j])
+        P[i,j]=targets[i]*targets[j]*kf.linear_kernel(inputs[i],inputs[j])
 
 
 # initialization variables
 start = numpy.zeros(N)
-B=[(0,None) for b in range(N)] # Between 0 and C if constraints
+C= 0.5 # coefficient for slack variables
+B=[(0,C) for b in range(N)] # Between 0 and C if constraints
 XC=constraint={'type':'eq', 'fun':zerofun}
 
 
@@ -128,17 +129,16 @@ plt.axis('equal') # force same scale
 
 
 # *** Plotting the Decision Boundary ***
-xgrid=numpy.linspace(-4,4)
-ygrid=numpy.linspace(-3,3)
+xgrid=numpy.linspace(-3,3)
+ygrid=numpy.linspace(-2,2)
 grid=numpy.array([[indicator(x,y)
                     for x in xgrid]
                    for y in ygrid])
 plt.contour(xgrid, ygrid, grid,
             (-1.0, 0.0, 1.0),
             colors=('red', 'black', 'blue'),
-            linewidths=(1,3,1))
+            linewidths=(1,2,1))
 
-# plt.title("title") # title of the plot
+plt.title("title") # title of the plot
 plt.savefig('symplot.pdf') # save copy in a file
 plt.show()
-# 0.5, 1, 1.5, 2
