@@ -31,7 +31,7 @@ def polynomial_kernel(data1,data2):
     return (numpy.dot(data1,data2)+1)**p
 
 
-sigma = 1.0 # parameter: control the smoothness of the boundary
+sigma = 2.0 # parameter: control the smoothness of the boundary
 def rbf_kernel(data1, data2):
     """
     This function correponds to the Radial Basis Function (RBF) kernel

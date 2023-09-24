@@ -73,14 +73,14 @@ def indicator(x,y):
     #         bias += alpha[i]*targets[i]*kf.linear_kernel([x,y],inputs[i])-targets[i]
     firstPart = 0
     for i in range(N):
-        firstPart += putils.near0(alpha[i])*targets[i]*kf.linear_kernel([x,y],inputs[i])
+        firstPart += putils.near0(alpha[i])*targets[i]*kf.rbf_kernel([x,y],inputs[i])
     return firstPart - bias
 
 
 # *** Generating 2-dim test data ***
 classA = numpy.concatenate(
-    (numpy.random.randn(10,2)*0.2 + [1.5, 0.5],
-     numpy.random.randn(10,2)*0.2 + [-1.5,0.5]))
+    (numpy.random.randn(10,2)*0.7 + [1.5, 0.5],
+     numpy.random.randn(10,2)*0.7 + [-1.5,0.5]))
 classB = numpy.random.randn(20,2)*0.2 + [0.0, -0.5]
 inputs = numpy.concatenate((classA, classB))
 targets = numpy.concatenate(
@@ -97,12 +97,12 @@ targets=targets[permute]
 P = numpy.ndarray((N,N))
 for i in range(N):
     for j in range(N):
-        P[i,j]=targets[i]*targets[j]*kf.linear_kernel(inputs[i],inputs[j])
+        P[i,j]=targets[i]*targets[j]*kf.rbf_kernel(inputs[i],inputs[j])
 
 
 # initialization variables
 start = numpy.zeros(N)
-C= 0.5 # coefficient for slack variables
+C= None # coefficient for slack variables
 B=[(0,C) for b in range(N)] # Between 0 and C if constraints
 XC=constraint={'type':'eq', 'fun':zerofun}
 
