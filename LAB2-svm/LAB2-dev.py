@@ -5,10 +5,13 @@ import matplotlib.pyplot as plt
 
 # Personnals imports
 import kernel_function as kf
+import sys
 import personal_utils as putils
+from sklearn.datasets import make_moons, make_circles # for other 2-dim dataset
 
 # Using seed for random generation
 numpy.random.seed(100)
+
 
 
 
@@ -43,13 +46,13 @@ def zerofun(vectors):
     Represents the egality constraint equation (10) of subject
 
     Args:
-        aaaa
-        bbbb
+        vectors of values used for the constraint
 
     Returns:
-        A scalar value
+        Return the value to constraint
     """
-    return numpy.sum(alpha*targets)
+    if(C==None): return numpy.sum(putils.allBetween0andC(vectors)*targets)
+    else: return numpy.sum(putils.allBetween0andC(vectors, C)*targets)
 
 # ************************************
 # ******** Indicator function ********
@@ -67,30 +70,55 @@ def indicator(x,y):
     Returns:
         A scalar value corresponding
     """
-    bias = 0
-    # for i in range(len(alpha)):
-    #     if putils.near0(alpha[i])!=0.0:
-    #         bias += alpha[i]*targets[i]*kf.linear_kernel([x,y],inputs[i])-targets[i]
     firstPart = 0
     for i in range(N):
-        firstPart += putils.near0(alpha[i])*targets[i]*kf.rbf_kernel([x,y],inputs[i])
+        firstPart += alpha[i]*targets[i]*kf.rbf_kernel([x,y],inputs[i])
     return firstPart - bias
 
+# *** Generating basic 2-dim test data ***
+# classA = numpy.concatenate(
+#     (numpy.random.randn(10,2)*0.2 + [1.5, 0.5],
+#      numpy.random.randn(10,2)*0.2 + [-1.5,0.5]))
+# classB = numpy.random.randn(20,2)*0.2 + [0.0, -0.5]
+# inputs = numpy.concatenate((classA, classB))
+# N = inputs.shape[0] # nb of rows
+# targets = numpy.concatenate(
+#     (numpy.ones(classA.shape[0]),
+#      -numpy.ones(classB.shape[0])))
 
-# *** Generating 2-dim test data ***
-classA = numpy.concatenate(
-    (numpy.random.randn(10,2)*0.7 + [1.5, 0.5],
-     numpy.random.randn(10,2)*0.7 + [-1.5,0.5]))
-classB = numpy.random.randn(20,2)*0.2 + [0.0, -0.5]
-inputs = numpy.concatenate((classA, classB))
-targets = numpy.concatenate(
-    (numpy.ones(classA.shape[0]),
-     -numpy.ones(classB.shape[0])))
+# *** Generating moon 2-dim test data ***
+inputs, targets = make_moons(n_samples=40, noise=0.1)
+classA = []
+classB = []
+for i in range(len(targets)):
+    targets[i] = (targets[i]-0.5)*2
+for i in range(len(inputs)):
+    if targets[i]==1.0:
+        classA.append(inputs[i])
+    elif targets[i]==-1.0:
+        classB.append(inputs[i])
 N = inputs.shape[0] # nb of rows
 permute=list(range(N))
 random.shuffle(permute)
 inputs=inputs[permute, :]
 targets=targets[permute]
+
+# *** Generating circle 2-dim test data ***
+# inputs, targets = make_circles(n_samples=40, noise=0.05)
+# classA = []
+# classB = []
+# for i in range(len(targets)):
+#     targets[i] = (targets[i]-0.5)*2
+# for i in range(len(inputs)):
+#     if targets[i]==1.0:
+#         classA.append(inputs[i])
+#     elif targets[i]==-1.0:
+#         classB.append(inputs[i])
+# N = inputs.shape[0] # nb of rows
+# permute=list(range(N))
+# random.shuffle(permute)
+# inputs=inputs[permute, :]
+# targets=targets[permute]
 
 
 # Pre-computed matrix P 
@@ -102,20 +130,37 @@ for i in range(N):
 
 # initialization variables
 start = numpy.zeros(N)
-C= None # coefficient for slack variables
+C= 40 # coefficient for slack variables
 B=[(0,C) for b in range(N)] # Between 0 and C if constraints
-XC=constraint={'type':'eq', 'fun':zerofun}
+XC= {'type':'eq', 'fun':zerofun}
 
 
 # *** Heart of program ***
-# ret = minimize(objective, start,
-#                bounds=B, constraints=XC)
 ret = minimize(objective, start,
-               bounds=B)
-alpha = ret['x']
-# print(f"alpha:\n{alpha}") # print alpha values (majority of 0)
-# print(f"{[indicator(input[0], input[1]) for input in inputs]}") # compute indicator for each input (inferor or egal at -1 or superior or egal at 1))
+               bounds=B, constraints=XC)
+# ret = minimize(objective, start,
+#                bounds=B)
+alpha = putils.allNear0(ret['x'])
+print(f"Does the model find a solution: ? {'Yes' if ret['success']==True else 'No'} because {ret['message']}")
+print(f"alpha:\n{alpha}")
 
+# calcultion of bias
+bias = -1.05
+
+# test model
+inputs_test, targets_test = make_moons(n_samples=1000, noise=0.1)
+for i in range(len(targets_test)):
+    targets_test[i] = (targets_test[i]-0.5)*2
+# print(inputs_test)
+# print(targets_test)
+sucess = 0
+for i in range(len(inputs_test)):
+    classIndicator = 1.0 if indicator(inputs_test[i][0],inputs_test[i][1])>0.0 else -1.0
+    if classIndicator==targets_test[i]:sucess+=1
+print(f"Error on testing set: {(sucess/len(inputs_test))*100}%")
+
+
+# print(f"{[indicator(input[0], input[1]) for input in inputs]}") # compute indicator for each input (inferor or egal at -1 or superior or egal at 1))
 
 # *** Plotting ***
 plt.plot([p[0] for p in classA],
@@ -129,8 +174,8 @@ plt.axis('equal') # force same scale
 
 
 # *** Plotting the Decision Boundary ***
-xgrid=numpy.linspace(-3,3)
-ygrid=numpy.linspace(-2,2)
+xgrid=numpy.linspace(-1.5,1.5)
+ygrid=numpy.linspace(-1.5,1.5)
 grid=numpy.array([[indicator(x,y)
                     for x in xgrid]
                    for y in ygrid])

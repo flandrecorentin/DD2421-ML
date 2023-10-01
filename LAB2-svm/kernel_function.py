@@ -16,7 +16,7 @@ def linear_kernel(data1, data2):
     return numpy.dot(data1,data2)
 
 
-p = 2 # parameter: degree of the polynomials. p=2 -> quadratic shapes
+p = 10 # parameter: degree of the polynomials. p=2 -> quadratic shapes
 def polynomial_kernel(data1,data2):
     """
     This function correponds to the polynomial kernel
@@ -31,7 +31,7 @@ def polynomial_kernel(data1,data2):
     return (numpy.dot(data1,data2)+1)**p
 
 
-sigma = 2.0 # parameter: control the smoothness of the boundary
+sigma = 1.0 # parameter: control the smoothness of the boundary
 def rbf_kernel(data1, data2):
     """
     This function correponds to the Radial Basis Function (RBF) kernel
