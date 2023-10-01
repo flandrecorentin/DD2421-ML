@@ -32,6 +32,31 @@ Improving decision tree methods with pruning method and a parameter of fractionn
 
 > Corresponding to the repository *LAB2-svm*
 
+> Importants files for this laboratory are : *LAB2-report-FLANDRE-v1.pdf* (which corresponds to the report) and *LAB2-dev.py* (which corresponds to the personal code)
+
+Implementation of a SVM model for classification
+
+Concepts of SVM classification:
+- Decision boundaries 
+- Support Vector and Margin
+- Dual Formulation Theory
+
+Improving the SVM model:
+- Kernel functions (linear function, polynomial function, radius basis function(RBF))
+- Slack variables
+
+Paying attention to :
+
+1. Reaction of the model/optimizer when it’s not able to find a solution
+
+2. Implementation of non-linear kernels and impact on classification 
+
+3. Influence of parameters of non-linear kernels in terms of the bias-variance trade-off 
+
+4. Exploring slack parameter C in large/small values (increase/decrease value)
+
+5. Balancing between opt for more slack or for more complex model
+
 ## Lab3 - Bayes Classifier & Boosting
 
-Corresponding to the repository *LAB3-?????*
+Corresponding to the repository *LAB3-bayes+boosting*
