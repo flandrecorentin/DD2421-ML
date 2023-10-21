@@ -59,4 +59,18 @@ Paying attention to :
 
 ## Lab3 - Bayes Classifier & Boosting
 
-Corresponding to the repository *LAB3-bayes+boosting*
+> Corresponding to the repository *LAB3-bayes+boosting*
+
+> Importants files for this laboratory are : *LAB3-report-v3.pdf* (which corresponds to the report) and *LAB3-report.ipynb* (which corresponds to the jupyter notebook)
+
+Implementation of a Bayes Classifier and a Boosting classifier function
+
+Usage of a Decision Classifier and its boosting version
+
+This lab paying attention to :
+
+1. Bayes' theorem
+
+2. Probabilistic reasoning (especially prior, likehood, evidence and posterior probabilities)
+
+3. Boosting effect (implentation of AdaBoost algorithm)
